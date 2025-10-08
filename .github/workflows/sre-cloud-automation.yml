@@ -1,0 +1,16 @@
+name: SRE Cloud Automation
+
+on:
+  repository_dispatch:
+    types: [cloud-resource-request]
+
+jobs:
+  Acknowledge_Request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log Incoming Payload
+        run: |
+          echo "🚀 Request received from ServiceNow!"
+          echo "Ticket ID: ${{ github.event.client_payload.ticket_id }}"
+          echo "Action: ${{ github.event.client_payload.action }}"
+          echo "Resource: ${{ github.event.client_payload.resource_name }}"
