@@ -39,3 +39,12 @@ jobs:
               "header": " APPROVAL REQUIRED ",
               "content": "Click here to review and approve: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }]
+
+            # Add this new job after the Send_Approval_Notification job
+  Approval_Gate:
+    runs-on: ubuntu-latest
+    needs: Send_Approval_Notification
+    environment: production-access # This is the magic part!
+    steps:
+      - name: Log Approval
+        run: echo "Request has been approved."
