@@ -14,3 +14,28 @@ jobs:
           echo "Ticket ID: ${{ github.event.client_payload.ticket_id }}"
           echo "Action: ${{ github.event.client_payload.action }}"
           echo "Resource: ${{ github.event.client_payload.resource_name }}"
+
+# Add this new job after the Acknowledge_Request job
+  Send_Approval_Notification:
+    runs-on: ubuntu-latest
+    needs: Acknowledge_Request 
+    steps:
+      - name: Send to Google Chat for Approval
+        uses: Co-qn/google-chat-notification@releases/v1
+        with:
+          name: SRE Approval Request
+          url: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+          status: "REQUESTED"
+          custom_fields: |
+            [{
+              "header": "ServiceNow Ticket",
+              "content": "${{ github.event.client_payload.ticket_id }}"
+            },
+            {
+              "header": "Action Required",
+              "content": "${{ github.event.client_payload.action }} on ${{ github.event.client_payload.resource_name }}"
+            },
+            {
+              "header": " APPROVAL REQUIRED ",
+              "content": "Click here to review and approve: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]
